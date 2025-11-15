@@ -9,9 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { Transaction } from '../types/transaction';
+import { MotiView, AnimatePresence } from 'moti';
 
 interface AddTransactionModalProps {
   visible: boolean;
@@ -69,78 +71,104 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   return (
     <Modal
       visible={visible}
-      animationType="slide"
       transparent
       onRequestClose={handleClose}
+      animationType="none" // Use Moti for animation
     >
-      <KeyboardAvoidingView
-        style={styles.overlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Nova Transação</Text>
-            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-              <X size={24} color="#9ca3af" />
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView style={styles.form}>
-            <View style={styles.typeSelector}>
-              <TouchableOpacity
-                style={[styles.typeButton, type === 'expense' && styles.typeButtonActiveExpense]}
-                onPress={() => setType('expense')}
-              >
-                <Text style={[styles.typeButtonText, type === 'expense' && styles.typeButtonTextActive]}>Despesa</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.typeButton, type === 'income' && styles.typeButtonActiveIncome]}
-                onPress={() => setType('income')}
-              >
-                <Text style={[styles.typeButtonText, type === 'income' && styles.typeButtonTextActive]}>Receita</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Descrição</Text>
-              <TextInput
-                style={[styles.input, errors.description && styles.inputError]}
-                placeholder="Ex: Almoço, Salário..."
-                placeholderTextColor="#9ca3af"
-                value={description}
-                onChangeText={setDescription}
-                autoFocus
-              />
-              {errors.description ? (
-                <Text style={styles.errorText}>{errors.description}</Text>
-              ) : null}
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Valor</Text>
-              <TextInput
-                style={[styles.input, errors.amount && styles.inputError]}
-                placeholder="0.00"
-                placeholderTextColor="#9ca3af"
-                value={amount}
-                onChangeText={setAmount}
-                keyboardType="decimal-pad"
-              />
-              {errors.amount ? (
-                <Text style={styles.errorText}>{errors.amount}</Text>
-              ) : null}
-            </View>
-
-            <TouchableOpacity
-              style={[styles.addButton, type === 'income' && styles.addButtonIncome]}
-              onPress={validateAndSubmit}
-              activeOpacity={0.8}
+      <AnimatePresence>
+        {visible && (
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <MotiView
+              style={styles.overlay}
+              from={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: 'timing', duration: 250 }}
             >
-              <Text style={styles.addButtonText}>Adicionar</Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
+              <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
+              
+              <MotiView
+                from={{ translateY: 300 }}
+                animate={{ translateY: 0 }}
+                exit={{ translateY: 300 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 150 }}
+                style={styles.modalContainer}
+              >
+                <View style={styles.header}>
+                  <Text style={styles.title}>Nova Transação</Text>
+                  <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+                    <X size={24} color="#9ca3af" />
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.form}>
+                  <View style={styles.typeSelector}>
+                    <MotiView whileHover={{ scale: 1.05 }} transition={{ type: 'spring' }} style={{ flex: 1 }}>
+                      <TouchableOpacity
+                        style={[styles.typeButton, type === 'expense' && styles.typeButtonActiveExpense]}
+                        onPress={() => setType('expense')}
+                      >
+                        <Text style={[styles.typeButtonText, type === 'expense' && styles.typeButtonTextActive]}>Despesa</Text>
+                      </TouchableOpacity>
+                    </MotiView>
+                    <MotiView whileHover={{ scale: 1.05 }} transition={{ type: 'spring' }} style={{ flex: 1 }}>
+                      <TouchableOpacity
+                        style={[styles.typeButton, type === 'income' && styles.typeButtonActiveIncome]}
+                        onPress={() => setType('income')}
+                      >
+                        <Text style={[styles.typeButtonText, type === 'income' && styles.typeButtonTextActive]}>Receita</Text>
+                      </TouchableOpacity>
+                    </MotiView>
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Descrição</Text>
+                    <TextInput
+                      style={[styles.input, errors.description && styles.inputError]}
+                      placeholder="Ex: Almoço, Salário..."
+                      placeholderTextColor="#9ca3af"
+                      value={description}
+                      onChangeText={setDescription}
+                      autoFocus
+                    />
+                    {errors.description ? (
+                      <Text style={styles.errorText}>{errors.description}</Text>
+                    ) : null}
+                  </View>
+
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Valor</Text>
+                    <TextInput
+                      style={[styles.input, errors.amount && styles.inputError]}
+                      placeholder="0.00"
+                      placeholderTextColor="#9ca3af"
+                      value={amount}
+                      onChangeText={setAmount}
+                      keyboardType="decimal-pad"
+                    />
+                    {errors.amount ? (
+                      <Text style={styles.errorText}>{errors.amount}</Text>
+                    ) : null}
+                  </View>
+
+                  <MotiView whileHover={{ scale: 1.03 }} transition={{ type: 'spring' }}>
+                    <TouchableOpacity
+                      style={styles.addButton}
+                      onPress={validateAndSubmit}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.addButtonText}>Adicionar</Text>
+                    </TouchableOpacity>
+                  </MotiView>
+                </ScrollView>
+              </MotiView>
+            </MotiView>
+          </KeyboardAvoidingView>
+        )}
+      </AnimatePresence>
     </Modal>
   );
 };
@@ -152,7 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    backgroundColor: '#1f2937',
+    backgroundColor: '#1c1b22',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: 20,
@@ -179,7 +207,7 @@ const styles = StyleSheet.create({
   },
   typeSelector: {
     flexDirection: 'row',
-    backgroundColor: '#374151',
+    backgroundColor: '#2a2833',
     borderRadius: 12,
     padding: 4,
     marginBottom: 20,
@@ -191,10 +219,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   typeButtonActiveExpense: {
-    backgroundColor: '#be123c',
+    backgroundColor: '#7e22ce',
   },
   typeButtonActiveIncome: {
-    backgroundColor: '#16a34a',
+    backgroundColor: '#a78bfa',
   },
   typeButtonText: {
     color: '#d1d5db',
@@ -214,18 +242,18 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#4b5563',
+    borderColor: '#4a4659',
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    backgroundColor: '#374151',
+    backgroundColor: '#2a2833',
     color: '#ffffff',
   },
   inputError: {
-    borderColor: '#f87171',
+    borderColor: '#e879f9',
   },
   errorText: {
-    color: '#fca5a5',
+    color: '#f0abfc',
     fontSize: 12,
     marginTop: 4,
   },
@@ -235,9 +263,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
-  },
-  addButtonIncome: {
-    backgroundColor: '#10b981',
   },
   addButtonText: {
     color: '#ffffff',

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LucideProps } from 'lucide-react-native';
+import { MotiView } from 'moti';
 
 interface StatCardProps {
   label: string;
@@ -11,13 +12,17 @@ interface StatCardProps {
 
 export const StatCard: React.FC<StatCardProps> = ({ label, value, icon, color }) => {
   return (
-    <View style={styles.card}>
+    <MotiView
+      style={styles.card}
+      whileHover={{ transform: [{ scale: 1.05 }], shadowOpacity: 0.1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
       <View style={styles.header}>
         <Text style={styles.label}>{label}</Text>
         {React.cloneElement(icon, { color: color, size: 22 })}
       </View>
       <Text style={[styles.value, { color: color }]}>{value}</Text>
-    </View>
+    </MotiView>
   );
 };
 
@@ -27,6 +32,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     flex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 5,
   },
   header: {
     flexDirection: 'row',

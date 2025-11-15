@@ -6,13 +6,15 @@ import { Transaction } from '../types/transaction';
 import { formatCurrency } from '../utils/formatters';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { MotiView } from 'moti';
 
 interface TransactionItemProps {
   transaction: Transaction;
   onDelete: (id: string) => void;
+  index: number;
 }
 
-export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete }) => {
+export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete, index }) => {
   const isIncome = transaction.type === 'income';
 
   const handleDelete = () => {
@@ -26,16 +28,26 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, o
     );
   };
 
-  const gradientColors = isIncome ? ['#15803d', '#10b981'] : ['#1e3a8a', '#9333ea'];
+  const gradientColors = isIncome ? ['#581c87', '#9333ea'] : ['#3b0764', '#7e22ce'];
 
   return (
-    <View style={styles.container}>
+    <MotiView
+      style={styles.container}
+      from={{ opacity: 0, translateY: 50, scale: 0.9 }}
+      animate={{ opacity: 1, translateY: 0, scale: 1 }}
+      transition={{
+        type: 'timing',
+        duration: 500,
+        delay: index * 100,
+      }}
+      whileHover={{ transform: [{ scale: 1.02 }], shadowOpacity: 0.3 }}
+    >
       <LinearGradient colors={gradientColors} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={styles.gradient}>
         <View style={styles.iconWrapper}>
           {isIncome ? (
-            <ArrowUpCircle size={24} color="#a7f3d0" />
+            <ArrowUpCircle size={24} color="#d8b4fe" />
           ) : (
-            <ArrowDownCircle size={24} color="#e0e7ff" />
+            <ArrowDownCircle size={24} color="#d8b4fe" />
           )}
         </View>
         <View style={styles.content}>
@@ -51,11 +63,11 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, o
             {formatDistanceToNow(new Date(transaction.date), { addSuffix: true, locale: ptBR })}
           </Text>
           <TouchableOpacity style={styles.deleteButton} onPress={handleDelete} activeOpacity={0.7}>
-            <Trash2 size={20} color={isIncome ? '#a7f3d0' : '#fecaca'} />
+            <Trash2 size={20} color={'#d8b4fe'} />
           </TouchableOpacity>
         </View>
       </LinearGradient>
-    </View>
+    </MotiView>
   );
 };
 
@@ -84,7 +96,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#e0e7ff',
+    color: '#f3e8ff',
     marginBottom: 2,
   },
   amount: {
@@ -93,14 +105,14 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   incomeAmount: {
-    color: '#d1fae5',
+    color: '#e9d5ff',
   },
   meta: {
     alignItems: 'flex-end',
   },
   date: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: '#d8b4fe',
     marginBottom: 4,
   },
   deleteButton: {

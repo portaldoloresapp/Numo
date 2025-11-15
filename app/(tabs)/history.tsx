@@ -40,7 +40,7 @@ export default function HistoryScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color="#9333ea" />
       </SafeAreaView>
     );
   }
@@ -53,8 +53,8 @@ export default function HistoryScreen() {
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TransactionItem transaction={item} onDelete={handleDeleteTransaction} />
+        renderItem={({ item, index }) => (
+          <TransactionItem transaction={item} onDelete={handleDeleteTransaction} index={index} />
         )}
         contentContainerStyle={[
           styles.listContent,
@@ -70,13 +70,13 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#100f14',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#111827',
+    backgroundColor: '#100f14',
   },
   header: {
     paddingHorizontal: 20,
@@ -89,6 +89,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 120,
   },
 });
